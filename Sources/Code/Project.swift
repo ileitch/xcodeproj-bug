@@ -36,7 +36,11 @@ public class Project: XcodeProjectlike {
         if path != "Pods/Pods.xcodeproj" {
             projects = try xcodeProject.pbxproj.fileReferences
                 .filter { $0.path?.hasSuffix("xcodeproj") ?? false }
-                .compactMap { try $0.fullPath(sourceRoot: sourceRoot) }
+                .compactMap { ref -> Path? in
+                    let full = try ref.fullPath(sourceRoot: sourceRoot)
+                    print("Full path for ref ('\(ref.name ?? "nil")', '\(ref.path ?? "nil")') = '\(full?.string ?? "nil")'")
+                    return full
+                }
                 .map { try Project.make(path: $0.string) }
         }
 
